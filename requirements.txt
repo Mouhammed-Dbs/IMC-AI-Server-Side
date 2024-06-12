@@ -1,4 +1,5 @@
 Flask==1.1.2
+scipy
 gensim
 pandas==1.4.4
 python-dotenv==1.0.1
