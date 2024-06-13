@@ -1,5 +1,4 @@
-scipy==1.7.1
-gensim==4.1.2
+gensim
 Flask
 Jinja2
 pandas==1.4.4
