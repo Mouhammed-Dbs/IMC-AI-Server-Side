@@ -13,8 +13,8 @@ model_file = 'models/word2vec_data.pkl'
 wv = {}
 if os.path.exists(model_file):
     with open(model_file, 'rb') as f:
-        model_wv = pickle.load(f)
-    wv = model_wv.wv
+        wv = pickle.load(f)
+    
 
 
 # Load models and vocabulary
