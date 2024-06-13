@@ -1,4 +1,4 @@
-genism
+gensim
 Flask
 Jinja2
 pandas
