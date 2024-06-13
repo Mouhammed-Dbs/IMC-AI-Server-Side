@@ -6,15 +6,6 @@ import pandas as pd
 import random
 from preprocessing import sentToVec,processSent
 import pickle
-import os
-
-model_file = 'models/word2vec_data.pkl'
-
-wv = {}
-if os.path.exists(model_file):
-    with open(model_file, 'rb') as f:
-        wv = pickle.load(f)
-    
 
 
 # Load models and vocabulary
@@ -96,7 +87,7 @@ def generateSeq2Seq(prepro1):
 def predictDisorder(sent):
     model = load_model('models/disorder_model.keras')
     stopwords = pickle.load(open('data/stopwords_ar.pkl', 'rb'))
-    padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
+    padded_sent = pad_sequences(sentToVec([processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
     predictions = model.predict(padded_sent)
     print(predictions)
     return np.argmax(predictions, axis=1)[0]

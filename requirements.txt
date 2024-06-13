@@ -7,4 +7,5 @@ Werkzeug
 tensorflow
 keras
 gdown
+ijson
 Gunicorn
