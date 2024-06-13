@@ -7,10 +7,10 @@ def download_file_from_google_drive(file_id, destination):
     url = f"https://drive.google.com/uc?id={file_id}"
     gdown.download(url, destination, quiet=False)
 
-file_path = 'models/word2vec_data.wordvectors.vectors.npy'
+file_path = 'models/word2vec_data.pkl'
 
 if os.path.exists(file_path)==False:
-    download_file_from_google_drive("1WHYPR2s_FavXDpV9c0IyOXgCWzId5tOH","models/word2vec_data.wordvectors.vectors.npy")
+    download_file_from_google_drive("1NV79f2eXW6-_aq3yaSAzZksTIXe0yoat","models/word2vec_data.pkl")
 
 app = Flask(__name__)
 

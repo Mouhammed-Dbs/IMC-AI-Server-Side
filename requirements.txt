@@ -1,11 +1,10 @@
-gensim
 Flask
 Jinja2
 pandas
 python-dotenv
 itsdangerous
 Werkzeug
-tensorflow-cpu
+tensorflow
 keras
 gdown
 Gunicorn
