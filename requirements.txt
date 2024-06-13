@@ -5,7 +5,7 @@ pandas
 python-dotenv
 itsdangerous
 Werkzeug
-tensorflow
+tensorflow-cpu
 keras
 gdown
 Gunicorn
