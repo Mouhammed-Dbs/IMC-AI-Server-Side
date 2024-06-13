@@ -6,7 +6,7 @@ import pandas as pd
 import random
 from preprocessing import sentToVec,processSent
 import pickle
-from gensim.models import KeyedVectors
+# from gensim.models import KeyedVectors
 
 # Load models and vocabulary
 model = load_model('models/seq2seq.keras')
@@ -37,10 +37,10 @@ def generateResponse(idQues,userRes=None,typeQues='ar'):
         if userRes ==None or userRes=='':
             category_questions = df_first_stage.loc[df_first_stage['category'] == idQues, typeQuestion]
             return {"type":"que","result":random.choice(category_questions.values.tolist())}
-        else:
-            if predictDisorder(userRes)>0:
-                return {"type":"seq","result":generateSeq2Seq(userRes)}
-            return {"type":"sent","result":random.choice(normal_res.values.tolist())}
+        # else:
+        #     if predictDisorder(userRes)>0:
+        #         return {"type":"seq","result":generateSeq2Seq(userRes)}
+        #     return {"type":"sent","result":random.choice(normal_res.values.tolist())}
     return {"type":"unknown"}
 
 
@@ -84,11 +84,11 @@ def generateSeq2Seq(prepro1):
     return decoded_translation
 
 
-def predictDisorder(sent):
-    model = load_model('models/disorder_model.keras')
-    wv = KeyedVectors.load("models/word2vec_data.wordvectors", mmap='r')
-    stopwords = pickle.load(open('data/stopwords_ar.pkl', 'rb'))
-    padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
-    predictions = model.predict(padded_sent)
-    print(predictions)
-    return np.argmax(predictions, axis=1)[0]
+# def predictDisorder(sent):
+#     model = load_model('models/disorder_model.keras')
+#     wv = KeyedVectors.load("models/word2vec_data.wordvectors", mmap='r')
+#     stopwords = pickle.load(open('data/stopwords_ar.pkl', 'rb'))
+#     padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
+#     predictions = model.predict(padded_sent)
+#     print(predictions)
+#     return np.argmax(predictions, axis=1)[0]
