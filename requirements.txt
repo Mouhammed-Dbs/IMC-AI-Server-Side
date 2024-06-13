@@ -6,4 +6,5 @@ python-dotenv
 itsdangerous
 Werkzeug
 gdown
+keras
 Gunicorn
