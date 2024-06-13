@@ -1,3 +1,4 @@
 Flask==1.1.2
-gensim
+Jinja2==3.0.3
+gensim==4.1.2
 Gunicorn
