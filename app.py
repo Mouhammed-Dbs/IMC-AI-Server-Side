@@ -10,7 +10,7 @@ def download_file_from_google_drive(file_id, destination):
 file_path = 'models/word2vec_data.pkl'
 
 if os.path.exists(file_path)==False:
-    download_file_from_google_drive("1NV79f2eXW6-_aq3yaSAzZksTIXe0yoat","models/word2vec_data.pkl")
+    download_file_from_google_drive("1YNjkOyaPcEwtWY9vPtYWR9beD6xDOwdd","models/word2vec_data.pkl")
 
 app = Flask(__name__)
 
