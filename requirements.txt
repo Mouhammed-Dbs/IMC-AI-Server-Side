@@ -2,9 +2,4 @@ Flask==1.1.2
 Jinja2==3.0.3
 gensim==4.1.2
 pandas==1.4.4
-python-dotenv==1.0.1
-itsdangerous==2.0.1
-Werkzeug==2.0.3
-tensorflow==2.16.1
-gdown==5.2.0
 Gunicorn
