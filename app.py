@@ -12,12 +12,12 @@ files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json','data/ve
 id_files = ['11EqtHMN0uvbAFMk-cEq5Ddd2OOqwNhe2','17OTWskZuQlyzZHI81Dk9YYKf3ENA7DMj','1Z7EErYLKT4KACRVIkb2OViZIPzS8-9G2',
             '1IyQAktDnR7QnVqka5TvQz9mMsNDV2k9s','1Hoyf_NRjy3mI_huj4GM_3wbg6mmJV8BX','1BnJ005KUOiFrvi7yX3v0Ui4CGvpnMOI8']
 
-for i,file_path in enumerate(files):
-    if os.path.exists(file_path)==False:
-        download_file_from_google_drive('1rEtiYEO2k62RJ9nRgM6AxVLXlI5mCmAZ',"data/vectors.zip")
-        with zipfile.ZipFile("data/vectors.zip", 'r') as zip_ref:
-            zip_ref.extractall("data")
-        break
+# for i,file_path in enumerate(files):
+if os.path.exists(files[0])==False:
+    download_file_from_google_drive('1IuJUWyYl9VZ31ysGY2y2FhXuPNM1tscA',"data/vectors.zip")
+    with zipfile.ZipFile("data/vectors.zip", 'r') as zip_ref:
+        zip_ref.extractall("data")
+    # break
 
 app = Flask(__name__)
 
