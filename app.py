@@ -12,7 +12,7 @@ id_files = ['1mrMjVBJh6f46uUVqVx4SKbMeVbMWqhh_','1SiXGYqx2UUa1FmCeFT_edxc_n5eHdK
 
 for i,file_path in enumerate(files):
     if os.path.exists(file_path)==False:
-        download_file_from_google_drive(id_files[i],"data/vectors"+i+".json")
+        download_file_from_google_drive(id_files[i],"data/vectors"+str(i)+".json")
 
 app = Flask(__name__)
 
