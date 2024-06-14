@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from helpers import generateResponse
 import os
 import gdown
+import zipfile
 
 def download_file_from_google_drive(file_id, destination):
     url = f"https://drive.google.com/uc?id={file_id}"
@@ -13,7 +14,10 @@ id_files = ['11EqtHMN0uvbAFMk-cEq5Ddd2OOqwNhe2','17OTWskZuQlyzZHI81Dk9YYKf3ENA7D
 
 for i,file_path in enumerate(files):
     if os.path.exists(file_path)==False:
-        download_file_from_google_drive(id_files[i],"data/vectors"+str(i)+".json")
+        download_file_from_google_drive('1Ba0t8tXcjd8GnzfXGuZ_5AW0km4MHVoW',"data/vectors.zip")
+        with zipfile.ZipFile("data/vectors.zip", 'r') as zip_ref:
+            zip_ref.extractall("data")
+        break
 
 app = Flask(__name__)
 
