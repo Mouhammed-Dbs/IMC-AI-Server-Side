@@ -39,7 +39,7 @@ def generateResponse(idQues,userRes=None,typeQues='ar'):
             return {"type":"que","result":random.choice(category_questions.values.tolist())}
         else:
             if predictDisorder(userRes)>0:
-                return {"type":"seq","result":generateSeq2Seq(userRes)}
+                return {"type":"seq","result":"generateSeq2Seq(userRes)"}
             return {"type":"sent","result":random.choice(normal_res.values.tolist())}
     return {"type":"unknown"}
 
@@ -85,9 +85,9 @@ def generateSeq2Seq(prepro1):
 
 
 def predictDisorder(sent):
-    # model = load_model('models/disorder_model.keras')
-    # stopwords = pickle.load(open('data/stopwords_ar.pkl', 'rb'))
-    # padded_sent = pad_sequences(sentToVec([processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
-    # predictions = model.predict(padded_sent)
-    # print(predictions)
+    model = load_model('models/disorder_model.keras')
+    stopwords = pickle.load(open('data/stopwords_ar.pkl', 'rb'))
+    padded_sent = pad_sequences(sentToVec([processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
+    predictions = model.predict(padded_sent)
+    print(predictions)
     return np.argmax([[0.2,0.5,0.3]], axis=1)[0]
