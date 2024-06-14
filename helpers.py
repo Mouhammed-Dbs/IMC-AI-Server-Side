@@ -37,10 +37,10 @@ def generateResponse(idQues,userRes=None,typeQues='ar'):
         if userRes ==None or userRes=='':
             category_questions = df_first_stage.loc[df_first_stage['category'] == idQues, typeQuestion]
             return {"type":"que","result":random.choice(category_questions.values.tolist())}
-        # else:
-        #     if predictDisorder(userRes)>0:
-                # return {"type":"seq","result":generateSeq2Seq(userRes)}
-            # return {"type":"sent","result":random.choice(normal_res.values.tolist())}
+        else:
+            if predictDisorder(userRes)>0:
+                return {"type":"seq","result":generateSeq2Seq(userRes)}
+            return {"type":"sent","result":random.choice(normal_res.values.tolist())}
     return {"type":"unknown"}
 
 

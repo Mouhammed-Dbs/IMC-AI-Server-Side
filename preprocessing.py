@@ -4,9 +4,8 @@ import ijson
 import json
 
 def getVector(desired_key):
-    files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json','data/vectors3.json','data/vectors4.json','data/vectors5.json']
-    for file_path in files:
-        with open(file_path, 'r', encoding='utf-8') as file:
+    for i in range(11):
+        with open('data/vectors'+str(i)+'.json', 'r', encoding='utf-8') as file:
             parser = ijson.parse(file)
             for prefix, event, value in parser:
                 if prefix == desired_key:
