@@ -4,7 +4,7 @@ import ijson
 import json
 
 def getVector(desired_key):
-    files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json']
+    files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json','data/vectors3.json','data/vectors4.json','data/vectors5.json']
     for file_path in files:
         with open(file_path, 'r', encoding='utf-8') as file:
             parser = ijson.parse(file)

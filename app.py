@@ -7,8 +7,9 @@ def download_file_from_google_drive(file_id, destination):
     url = f"https://drive.google.com/uc?id={file_id}"
     gdown.download(url, destination, quiet=False)
 
-files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json']
-id_files = ['1mrMjVBJh6f46uUVqVx4SKbMeVbMWqhh_','1SiXGYqx2UUa1FmCeFT_edxc_n5eHdKzh','1Kv_rBMpLexnzwPHEc5nFa_xyGtJHKzDy']
+files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json','data/vectors3.json','data/vectors4.json','data/vectors5.json']
+id_files = ['11EqtHMN0uvbAFMk-cEq5Ddd2OOqwNhe2','17OTWskZuQlyzZHI81Dk9YYKf3ENA7DMj','1Z7EErYLKT4KACRVIkb2OViZIPzS8-9G2',
+            '1IyQAktDnR7QnVqka5TvQz9mMsNDV2k9s','1Hoyf_NRjy3mI_huj4GM_3wbg6mmJV8BX','1BnJ005KUOiFrvi7yX3v0Ui4CGvpnMOI8']
 
 for i,file_path in enumerate(files):
     if os.path.exists(file_path)==False:
