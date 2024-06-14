@@ -8,16 +8,13 @@ def download_file_from_google_drive(file_id, destination):
     url = f"https://drive.google.com/uc?id={file_id}"
     gdown.download(url, destination, quiet=False)
 
-files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json','data/vectors3.json','data/vectors4.json','data/vectors5.json']
-id_files = ['11EqtHMN0uvbAFMk-cEq5Ddd2OOqwNhe2','17OTWskZuQlyzZHI81Dk9YYKf3ENA7DMj','1Z7EErYLKT4KACRVIkb2OViZIPzS8-9G2',
-            '1IyQAktDnR7QnVqka5TvQz9mMsNDV2k9s','1Hoyf_NRjy3mI_huj4GM_3wbg6mmJV8BX','1BnJ005KUOiFrvi7yX3v0Ui4CGvpnMOI8']
+files = [f'data/vectors{i}.json' for i in range(11)]
+file_id = '1yDsPGb5uQUsx5AFNVI3HcCDjkZCQVo0s'
 
-# for i,file_path in enumerate(files):
-if os.path.exists(files[0])==False:
-    download_file_from_google_drive('1IuJUWyYl9VZ31ysGY2y2FhXuPNM1tscA',"data/vectors.zip")
+if not all(os.path.exists(file) for file in files):
+    download_file_from_google_drive(file_id, "data/vectors.zip")
     with zipfile.ZipFile("data/vectors.zip", 'r') as zip_ref:
         zip_ref.extractall("data")
-    # break
 
 app = Flask(__name__)
 
@@ -40,20 +37,19 @@ def generateQues(typeQues, idQues):
     if isAuth(request):
         if 0 < idQues <= 10:
             userRes = request.json.get('userRes', None)
+            response_data = generateResponse(idQues, userRes, typeQues)
             return jsonify({
                 'error': False,
                 'message': 'This is the next question for you',
-                'data': generateResponse(idQues,userRes, typeQues),
+                'data': response_data,
             })
         else:
             return jsonify({'error': True, 'message': 'Ques not found'}), 404
     return jsonify({'error': True, 'message': 'Invalid API key'}), 401
 
-
-
 @app.errorhandler(404)
 def not_found_error(error):
-    return jsonify({'error':True,'message': 'Route not found'}), 404
+    return jsonify({'error': True, 'message': 'Route not found'}), 404
 
 if __name__ == '__main__':
     app.run(port=9000)
