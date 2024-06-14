@@ -5,11 +5,11 @@ import json
 
 def getVector(desired_key):
     # for i in range(11):
-    with open('data/vectors0.json', 'r', encoding='utf-8') as file:
-        parser = ijson.parse(file)
-        for prefix, event, value in parser:
-            if prefix == desired_key:
-                return np.array(json.loads(value))
+    # with open('data/vectors0.json', 'r', encoding='utf-8') as file:
+    #     parser = ijson.parse(file)
+    #     for prefix, event, value in parser:
+    #         if prefix == desired_key:
+    #             return np.array(json.loads(value))
     return []
 
 def removePrefixes(word):
