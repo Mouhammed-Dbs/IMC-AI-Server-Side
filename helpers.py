@@ -90,4 +90,4 @@ def predictDisorder(sent):
     padded_sent = pad_sequences(sentToVec([processSent(sent.split(),stopwords)]), maxlen=15, padding='post',dtype='float32')
     predictions = model.predict(padded_sent)
     print(predictions)
-    return np.argmax([[0.2,0.5,0.3]], axis=1)[0]
+    return np.argmax(predictions, axis=1)[0]
