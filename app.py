@@ -7,10 +7,12 @@ def download_file_from_google_drive(file_id, destination):
     url = f"https://drive.google.com/uc?id={file_id}"
     gdown.download(url, destination, quiet=False)
 
-file_path = 'data/vectors.json'
+files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json']
+id_files = ['1mrMjVBJh6f46uUVqVx4SKbMeVbMWqhh_','1SiXGYqx2UUa1FmCeFT_edxc_n5eHdKzh','1Kv_rBMpLexnzwPHEc5nFa_xyGtJHKzDy']
 
-if os.path.exists(file_path)==False:
-    download_file_from_google_drive("1s69UqbLwWVOtmp9-yGNTXT3DhGKVBIlW","data/vectors.json")
+for i,file_path in enumerate(files):
+    if os.path.exists(file_path)==False:
+        download_file_from_google_drive(id_files[i],"data/vectors"+i+".json")
 
 app = Flask(__name__)
 

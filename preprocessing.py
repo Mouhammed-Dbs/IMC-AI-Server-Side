@@ -4,12 +4,14 @@ import ijson
 import json
 
 def getVector(desired_key):
-    with open("data/vectors.json", 'r', encoding='utf-8') as file:
-        parser = ijson.parse(file)
-        for prefix, event, value in parser:
-            if prefix == desired_key:
-                return np.array(json.loads(value))
-    return None
+    files = ['data/vectors0.json','data/vectors1.json','data/vectors2.json']
+    for file_path in files:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            parser = ijson.parse(file)
+            for prefix, event, value in parser:
+                if prefix == desired_key:
+                    return np.array(json.loads(value))
+    return []
 
 def removePrefixes(word):
     if len(word)>3:
@@ -57,12 +59,12 @@ def sentToVec(X_train):
     for sentence in X_train:
         sentence_vector = []
         for word in sentence:
-            # if getVector(word):
-            word_vector = getVector(word)
-            sentence_vector.append(word_vector)
-            # else:
-            #     word_vector = np.zeros(300)
-            #     sentence_vector.append(word_vector)
+            if len(getVector(word))>0:
+                word_vector = getVector(word)
+                sentence_vector.append(word_vector)
+            else:
+                word_vector = np.zeros(300)
+                sentence_vector.append(word_vector)
 
         X_train_vectors.append(sentence_vector)
     return X_train_vectors
