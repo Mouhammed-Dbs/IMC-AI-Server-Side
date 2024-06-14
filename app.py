@@ -14,7 +14,7 @@ id_files = ['11EqtHMN0uvbAFMk-cEq5Ddd2OOqwNhe2','17OTWskZuQlyzZHI81Dk9YYKf3ENA7D
 
 for i,file_path in enumerate(files):
     if os.path.exists(file_path)==False:
-        download_file_from_google_drive('1A1Ud2bgo7gMq8Ckk0zdwmlt0P7AbBbzL',"data/vectors.zip")
+        download_file_from_google_drive('1wOkn5W3qVPrqw9Qem0jLdjwjiVfTceZa',"data/vectors.zip")
         with zipfile.ZipFile("data/vectors.zip", 'r') as zip_ref:
             zip_ref.extractall("data")
         break
