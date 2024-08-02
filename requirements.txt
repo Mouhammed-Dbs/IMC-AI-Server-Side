@@ -6,6 +6,5 @@ itsdangerous
 Werkzeug
 tensorflow
 keras
-gdown
-ijson
+genism
 Gunicorn

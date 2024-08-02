@@ -1,20 +1,6 @@
 from flask import Flask, jsonify, request
 from helpers import generateResponse
 import os
-import gdown
-import zipfile
-
-def download_file_from_google_drive(file_id, destination):
-    url = f"https://drive.google.com/uc?id={file_id}"
-    gdown.download(url, destination, quiet=False)
-
-files = [f'data/vectors{i}.json' for i in range(11)]
-file_id = '1yDsPGb5uQUsx5AFNVI3HcCDjkZCQVo0s'
-
-if not all(os.path.exists(file) for file in files):
-    download_file_from_google_drive(file_id, "data/vectors.zip")
-    with zipfile.ZipFile("data/vectors.zip", 'r') as zip_ref:
-        zip_ref.extractall("data")
 
 app = Flask(__name__)
 

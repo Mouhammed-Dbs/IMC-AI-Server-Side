@@ -1,16 +1,5 @@
 import numpy as np
 import re
-import ijson
-import json
-
-def getVector(desired_key):
-    for i in range(11):
-        with open('data/vectors'+str(i)+'.json', 'r', encoding='utf-8') as file:
-            parser = ijson.parse(file)
-            for prefix, event, value in parser:
-                if prefix == desired_key:
-                    return np.array(json.loads(value))
-        return []
 
 def removePrefixes(word):
     if len(word)>3:
@@ -53,17 +42,18 @@ def processSent(words,stopwords):
                 copy_words.insert(i-1,neg+word)
     return copy_words
 
-def sentToVec(X_train):
+def sentToVec(wv,X_train):
     X_train_vectors = []
     for sentence in X_train:
         sentence_vector = []
         for word in sentence:
-            if len(getVector(word))>0:
-                word_vector = getVector(word)
+            try:
+                word_vector = wv[word]
                 sentence_vector.append(word_vector)
-            else:
+            except KeyError:
                 word_vector = np.zeros(300)
                 sentence_vector.append(word_vector)
+                pass
 
         X_train_vectors.append(sentence_vector)
     return X_train_vectors
