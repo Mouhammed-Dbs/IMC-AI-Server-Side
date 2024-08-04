@@ -20,33 +20,92 @@ with open('data/vocab.json', 'r') as file:
 with open('data/inv_vocab.json', 'r') as file:
     inv_vocab = json.load(file)
 
-df_first_stage = pd.read_csv('./data/first_stage.csv', encoding='utf-8')
+df_first_stage = pd.read_csv('./data/ques/first_stage.csv', encoding='utf-8')
 syrian_ques = df_first_stage['syrian_dialect_ques']
 arabic_ques = df_first_stage['arabic_ques']
+
+######## SECOND STAGE #######
+df_second_stage_depression = pd.read_csv('./data/ques/second_stage_depression.csv', encoding='utf-8')
+syrian_ques = df_second_stage_depression['syrian_dialect_ques']
+arabic_ques = df_second_stage_depression['arabic_ques']
+df_second_stage_anxiety = pd.read_csv('./data/ques/second_stage_anxiety.csv', encoding='utf-8')
+syrian_ques = df_second_stage_anxiety['syrian_dialect_ques']
+arabic_ques = df_second_stage_anxiety['arabic_ques']
+#############################
+
+######## THIRD STAGE #######
+df_third_stage_depression = pd.read_csv('./data/ques/third_stage_depression.csv', encoding='utf-8')
+syrian_ques = df_third_stage_depression['syrian_dialect_ques']
+arabic_ques = df_third_stage_depression['arabic_ques']
+df_third_stage_anxiety = pd.read_csv('./data/ques/third_stage_anxiety.csv', encoding='utf-8')
+syrian_ques = df_third_stage_anxiety['syrian_dialect_ques']
+arabic_ques = df_third_stage_anxiety['arabic_ques']
+#############################
+
+stageLimits = {
+    'firstStageLimit':max(df_first_stage['category']),
+    'secondStageLimit':{'2':max(df_second_stage_anxiety['category']),
+                        '1':max(df_second_stage_depression['category'])},
+    'thirdStageLimit':{'2':max(df_third_stage_anxiety['category']),
+                       '1':max(df_third_stage_depression['category'])}
+}
+
+def getStageLimits():
+    return stageLimits
+
+quesVocab = {
+    'syrian_dialect_ques': {"2": [], '1': []},
+    'arabic_ques': {"2": [], '1': []}
+}
+
+def getQuesByCategorey(category,disorder='1',typeQuestion='arabic_ques'):
+    return [row['que'] for row in quesVocab[typeQuestion][disorder] if row['category']==category]
+
+def collect_ques(stage_df,prev=0, category_col='category', ques_col='arabic_ques'):
+    return [{'category': row[category_col]+prev, 'que': row[ques_col]} for index, row in stage_df.iterrows()]
+
+quesVocab['arabic_ques']['2'].extend(collect_ques(df_first_stage))
+quesVocab['arabic_ques']['2'].extend(collect_ques(df_second_stage_anxiety,prev=getStageLimits()['firstStageLimit']))
+quesVocab['arabic_ques']['2'].extend(collect_ques(df_third_stage_anxiety,prev=getStageLimits()['firstStageLimit']+getStageLimits()['secondStageLimit']['2']))
+
+quesVocab['arabic_ques']['1'].extend(collect_ques(df_first_stage))
+quesVocab['arabic_ques']['1'].extend(collect_ques(df_second_stage_depression,prev=getStageLimits()['firstStageLimit']))
+quesVocab['arabic_ques']['1'].extend(collect_ques(df_third_stage_depression,prev=getStageLimits()['firstStageLimit']+getStageLimits()['secondStageLimit']['1']))
+
+quesVocab['syrian_dialect_ques']['2'].extend(collect_ques(df_first_stage, ques_col='syrian_dialect_ques'))
+quesVocab['syrian_dialect_ques']['2'].extend(collect_ques(df_second_stage_anxiety,prev=getStageLimits()['firstStageLimit'], ques_col='syrian_dialect_ques'))
+quesVocab['syrian_dialect_ques']['2'].extend(collect_ques(df_third_stage_anxiety,prev=getStageLimits()['firstStageLimit']+getStageLimits()['secondStageLimit']['2'], ques_col='syrian_dialect_ques'))
+
+quesVocab['syrian_dialect_ques']['1'].extend(collect_ques(df_first_stage, ques_col='syrian_dialect_ques'))
+quesVocab['syrian_dialect_ques']['1'].extend(collect_ques(df_second_stage_depression,prev=getStageLimits()['firstStageLimit'], ques_col='syrian_dialect_ques'))
+quesVocab['syrian_dialect_ques']['1'].extend(collect_ques(df_third_stage_depression,prev=getStageLimits()['firstStageLimit']+getStageLimits()['secondStageLimit']['1'], ques_col='syrian_dialect_ques'))
+
 df_normal_response = pd.read_csv('./data/normal_response.csv', encoding='utf-8')
 normal_res = df_normal_response['sentence']
+
+
 
 # Load stopwords once
 with open('data/stopwords_ar.pkl', 'rb') as file:
     stopwords = pickle.load(file)
 
-def generateResponse(idQues, userRes=None, typeQues='ar'):
-    borderSymptom = 11
+def generateResponse(idQues, userRes=None, typeQues='ar',idDisorder=1):
+    # borderSymptom = getStageLimits()["firstStageLimit"]
     typeQuestion = 'arabic_ques'
     if typeQues == 'sy':
         typeQuestion = 'syrian_dialect_ques'
-    if idQues < borderSymptom:
-        if userRes is None or userRes == '':
-            category_questions = df_first_stage.loc[df_first_stage['category'] == idQues, typeQuestion]
-            print("static")
-            return {"type": "que", "result": random.choice(category_questions.values.tolist())}
-        else:
-            if predictDisorder(userRes) > 0:
-                print("seq2seq")
-                return {"type": "seq", "result": generateSeq2Seq(userRes)}
-            print("normal")
-            return {"type": "sent", "result": random.choice(normal_res.values.tolist())}
-    return {"type": "unknown"}
+    # if idQues <= borderSymptom:
+    if userRes is None or userRes == '':
+        category_questions = getQuesByCategorey(idQues,idDisorder,typeQuestion)
+        print(category_questions)
+        return {"type": "que", "result": random.choice(category_questions)}
+    else:
+        if predictDisorder(userRes) > 0:
+            print("seq2seq")
+            return {"type": "seq", "result": generateSeq2Seq(userRes)}
+        print("normal")
+        return {"type": "sent", "result": random.choice(normal_res.values.tolist())}
+    # return {"type": "unknown"}
 
 def generateSeq2Seq(prepro1):
     tokens = ['<PAD>', '<EOS>', '<OUT>', '<SOS>']
@@ -91,3 +150,14 @@ def predictDisorder(sent):
     predictions = disorder_model.predict(padded_sent)
     print(predictions)
     return np.argmax(predictions, axis=1)[0]
+
+def predictDisorderForUserAnswers(sentences):
+    meanPredictions = np.zeros((1,3))
+    for sent in sentences:
+        padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
+        predictions = disorder_model.predict(padded_sent)
+        meanPredictions+=predictions
+    meanPredictions = meanPredictions/len(sentences)
+    return np.argmax(meanPredictions, axis=1)[0]
+
+

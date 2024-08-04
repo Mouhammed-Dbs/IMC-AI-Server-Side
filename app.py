@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from helpers import generateResponse
+from helpers import generateResponse,predictDisorderForUserAnswers,getStageLimits
 import os
 
 app = Flask(__name__)
@@ -21,17 +21,34 @@ def isAuth(request):
 @app.route('/generateQues/<string:typeQues>/<int:idQues>', methods=['POST'])
 def generateQues(typeQues, idQues):
     if isAuth(request):
-        if 0 < idQues <= 10:
-            userRes = request.json.get('userRes', None)
-            response_data = generateResponse(idQues, userRes, typeQues)
-            return jsonify({
-                'error': False,
-                'message': 'This is the next question for you',
-                'data': response_data,
-            })
-        else:
-            return jsonify({'error': True, 'message': 'Ques not found'}), 404
+        limits = getStageLimits()
+        idDisorder = request.args.get('idDisorder')
+        if (((idDisorder == None ) and (0 < idQues <= limits["firstStageLimit"]) == False)) or (idDisorder != None and (0 < idQues <= limits["firstStageLimit"]+limits["secondStageLimit"][idDisorder]+limits["thirdStageLimit"][idDisorder]) == False):
+            return jsonify({'error': True, 'message': 'Ques not found'})
+        if idDisorder == None:
+            idDisorder = '1'
+        userRes = request.json.get('userRes', None)
+        response_data = generateResponse(idQues, userRes, typeQues, idDisorder)
+        response_data['limits'] = limits;
+        return jsonify({
+            'error': False,
+            'message': 'This is the next question for you',
+            'data': response_data,
+        })
     return jsonify({'error': True, 'message': 'Invalid API key'}), 401
+
+@app.route('/predictDisorderForFirstStage', methods=['POST'])
+def predictDisorderForFirstStage():
+    if isAuth(request):
+        userAns = request.json.get('userAns', None)
+        result = predictDisorderForUserAnswers(userAns);
+        return jsonify({
+                'error': False,
+                'message': 'Prediction successfully',
+                'data': {"disorderLabel":int(result)},
+            })
+    return jsonify({'error': True, 'message': 'Invalid API key'}), 401
+
 
 @app.errorhandler(404)
 def not_found_error(error):
