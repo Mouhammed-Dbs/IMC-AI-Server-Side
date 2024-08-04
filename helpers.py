@@ -174,5 +174,6 @@ def extractSymptomsForUserAnswers(sentences,idDisorder):
         filtered_row = df_symptoms[(df_symptoms['label'] == label) & (df_symptoms['class'] == DISORDERS[idDisorder])]
         if len(filtered_row['sentence'].values)>0:
             name_symptom = filtered_row['sentence'].values[0]
-            symptoms.append(name_symptom)
+            if name_symptom not in symptoms:
+                symptoms.append(name_symptom)
     return symptoms
