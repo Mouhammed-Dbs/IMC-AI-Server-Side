@@ -14,11 +14,15 @@ model = load_model('models/seq2seq.keras')
 enc_model = load_model('models/encoder_model.keras')
 dec_model = load_model('models/decoder_model.keras')
 disorder_model = load_model('models/disorder_model.keras')
+symptoms_model = load_model('models/symptoms_model.keras')
 
 with open('data/vocab.json', 'r') as file:
     vocab = json.load(file)
 with open('data/inv_vocab.json', 'r') as file:
     inv_vocab = json.load(file)
+
+DISORDERS = {'1':'depression','2':'anxiety'}
+df_symptoms = pd.read_csv('./data/symptoms.csv', encoding='utf-8')
 
 df_first_stage = pd.read_csv('./data/ques/first_stage.csv', encoding='utf-8')
 syrian_ques = df_first_stage['syrian_dialect_ques']
@@ -160,4 +164,15 @@ def predictDisorderForUserAnswers(sentences):
     meanPredictions = meanPredictions/len(sentences)
     return np.argmax(meanPredictions, axis=1)[0]
 
-
+def extractSymptomsForUserAnswers(sentences,idDisorder):
+    symptoms = []
+    label = 0
+    for sent in sentences:
+        padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
+        predictions = symptoms_model.predict(padded_sent)
+        label = np.argmax(predictions, axis=1)[0]
+        filtered_row = df_symptoms[(df_symptoms['label'] == label) & (df_symptoms['class'] == DISORDERS[idDisorder])]
+        if len(filtered_row['sentence'].values)>0:
+            name_symptom = filtered_row['sentence'].values[0]
+            symptoms.append(name_symptom)
+    return symptoms

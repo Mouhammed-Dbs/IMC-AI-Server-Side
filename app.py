@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from helpers import generateResponse,predictDisorderForUserAnswers,getStageLimits
+from helpers import generateResponse,predictDisorderForUserAnswers,extractSymptomsForUserAnswers,getStageLimits
 import os
 
 app = Flask(__name__)
@@ -46,6 +46,21 @@ def predictDisorderForFirstStage():
                 'error': False,
                 'message': 'Prediction successfully',
                 'data': {"disorderLabel":int(result)},
+            })
+    return jsonify({'error': True, 'message': 'Invalid API key'}), 401
+
+@app.route('/extractSymptoms', methods=['POST'])
+def extractSymptoms():
+    if isAuth(request):
+        idDisorder = request.args.get('idDisorder')
+        if idDisorder == None:
+            return jsonify({'error': True, 'message': 'Missing idDisorder'}), 404
+        userAns = request.json.get('userAns', None)
+        result = extractSymptomsForUserAnswers(userAns,idDisorder);
+        return jsonify({
+                'error': False,
+                'message': 'Extract successfully',
+                'data': {"symptoms":result},
             })
     return jsonify({'error': True, 'message': 'Invalid API key'}), 401
 
