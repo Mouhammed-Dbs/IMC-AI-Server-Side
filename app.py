@@ -22,22 +22,24 @@ def isAuth(request):
 def generateQues(typeQues, idQues):
     if isAuth(request):
         limits = getStageLimits()
+        userRes = request.json.get('userRes', None)
         idDisorder = request.args.get('idDisorder')
-        if (((idDisorder == None ) and (0 < idQues <= limits["firstStageLimit"]) == False)) or (idDisorder != None and (0 < idQues <= limits["firstStageLimit"]+limits["secondStageLimit"][idDisorder]+limits["thirdStageLimit"][idDisorder]) == False):
-            return jsonify({'error': True, 'message': 'Ques not found','data':{'result':'','type':'unknown',"limits": {
-            "firstStageLimit": 10,
-            "secondStageLimit": {
-                "1": 9,
-                "2": 9
-            },
-            "thirdStageLimit": {
-                "1": 6,
-                "2": 11
-            }
-        }}})
+        if userRes == None or userRes == '':
+            if (((idDisorder == None ) and (0 < idQues <= limits["firstStageLimit"]) == False)) or (idDisorder != None and (0 < idQues <= limits["firstStageLimit"]+limits["secondStageLimit"][idDisorder]+limits["thirdStageLimit"][idDisorder]) == False):
+                return jsonify({'error': True, 'message': 'Ques not found','data':{'result':'','type':'unknown',"limits": {
+                "firstStageLimit": 10,
+                "secondStageLimit": {
+                    "1": 9,
+                    "2": 9
+                },
+                "thirdStageLimit": {
+                    "1": 6,
+                    "2": 11
+                }
+            }}})
         if idDisorder == None:
             idDisorder = '1'
-        userRes = request.json.get('userRes', None)
+        
         response_data = generateResponse(idQues, userRes, typeQues, idDisorder)
         response_data['limits'] = limits;
         return jsonify({

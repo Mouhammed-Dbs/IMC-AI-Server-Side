@@ -101,10 +101,9 @@ def generateResponse(idQues, userRes=None, typeQues='ar',idDisorder=1):
     # if idQues <= borderSymptom:
     if userRes is None or userRes == '':
         category_questions = getQuesByCategorey(idQues,idDisorder,typeQuestion)
-        print(category_questions)
         return {"type": "que", "result": random.choice(category_questions)}
     else:
-        if predictDisorder(userRes) > 0:
+        if isGenerateSeq2Seq(userRes):
             print("seq2seq")
             return {"type": "seq", "result": generateSeq2Seq(userRes)}
         print("normal")
@@ -149,11 +148,17 @@ def generateSeq2Seq(prepro1):
         decoded_translation = decoded_translation.replace(token, "")
     return decoded_translation
 
-def predictDisorder(sent):
+def isGenerateSeq2Seq(sent):
     padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
     predictions = disorder_model.predict(padded_sent)
-    print(predictions)
-    return np.argmax(predictions, axis=1)[0]
+    d = np.argmax(predictions, axis=1)[0]
+    padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
+    predictions = symptoms_model.predict(padded_sent)
+    s = np.argmax(predictions, axis=1)[0]
+    print('s:'+str(s)+'  d:'+str(d))
+    if d+s==0 :
+        return False
+    return True
 
 def predictDisorderForUserAnswers(sentences):
     meanPredictions = np.zeros((1,3))
@@ -168,12 +173,19 @@ def extractSymptomsForUserAnswers(sentences,idDisorder):
     symptoms = []
     label = 0
     for sent in sentences:
+        labels = []
+        for s in symptoms:
+            labels.append(s['label'])
         padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
         predictions = symptoms_model.predict(padded_sent)
         label = np.argmax(predictions, axis=1)[0]
         filtered_row = df_symptoms[(df_symptoms['label'] == label) & (df_symptoms['class'] == DISORDERS[idDisorder])]
         if len(filtered_row['sentence'].values)>0:
             name_symptom = filtered_row['sentence'].values[0]
-            if name_symptom not in symptoms:
-                symptoms.append(name_symptom)
+            if label not in labels:
+                symptoms.append({'name':name_symptom,'label':int(label),'prob':float(predictions[0][label])})
+            else:
+                for i,d in enumerate(symptoms):
+                    if d['label'] == label:
+                        symptoms[i]['prob'] = max(symptoms[i]['label'],float(predictions[0][label]))
     return symptoms
