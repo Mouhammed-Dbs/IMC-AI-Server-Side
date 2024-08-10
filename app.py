@@ -26,22 +26,11 @@ def generateQues(typeQues, idQues):
         idDisorder = request.args.get('idDisorder')
         if userRes == None or userRes == '':
             if (((idDisorder == None ) and (0 < idQues <= limits["firstStageLimit"]) == False)) or (idDisorder != None and (0 < idQues <= limits["firstStageLimit"]+limits["secondStageLimit"][idDisorder]+limits["thirdStageLimit"][idDisorder]) == False):
-                return jsonify({'error': True, 'message': 'Ques not found','data':{'result':'','type':'unknown',"limits": {
-                "firstStageLimit": 10,
-                "secondStageLimit": {
-                    "1": 9,
-                    "2": 9
-                },
-                "thirdStageLimit": {
-                    "1": 6,
-                    "2": 11
-                }
-            }}})
+                return jsonify({'error': True, 'message': 'Ques not found','data':{'result':'','type':'unknown' }})
         if idDisorder == None:
             idDisorder = '1'
         
         response_data = generateResponse(idQues, userRes, typeQues, idDisorder)
-        response_data['limits'] = limits;
         return jsonify({
             'error': False,
             'message': 'This is the next question for you',
@@ -76,6 +65,16 @@ def extractSymptoms():
             })
     return jsonify({'error': True, 'message': 'Invalid API key'}), 401
 
+
+@app.route('/stageLimits', methods=['GET'])
+def stageLimits():
+    if isAuth(request):
+        return jsonify({
+                'error': False,
+                'message': 'Get limits successfully',
+                'data': getStageLimits(),
+            })
+    return jsonify({'error': True, 'message': 'Invalid API key'}), 401
 
 @app.errorhandler(404)
 def not_found_error(error):

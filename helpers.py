@@ -161,13 +161,36 @@ def isGenerateSeq2Seq(sent):
     return True
 
 def predictDisorderForUserAnswers(sentences):
-    meanPredictions = np.zeros((1,3))
-    for sent in sentences:
-        padded_sent = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
-        predictions = disorder_model.predict(padded_sent)
-        meanPredictions+=predictions
-    meanPredictions = meanPredictions/len(sentences)
-    return np.argmax(meanPredictions, axis=1)[0]
+    meanPredictions = np.zeros((1, 3))
+    sum_5_6 = 0
+    sum_7_8 = 0
+
+    for sent_dict in sentences:
+        sent = sent_dict['content']
+        idQue = sent_dict['idQue']
+
+        padded_sent_disorder = pad_sequences(sentToVec(wv, [processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
+        padded_sent_symptom = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
+        predictions = disorder_model.predict(padded_sent_disorder)
+        meanPredictions += predictions
+
+        if 5 <= idQue < 9:
+            symptom_predictions = symptoms_model.predict(padded_sent_symptom)
+            if idQue in [5, 6]:
+                sum_5_6 += symptom_predictions[0, 31]
+            elif idQue in [7, 8]:
+                sum_7_8 += symptom_predictions[0, 19]
+    meanPredictions = meanPredictions / len(sentences)
+
+    result_5_6 = sum_5_6 * meanPredictions[0, 1]
+    result_7_8 = sum_7_8 * meanPredictions[0, 2]
+    print('anxiety:',result_5_6)
+    print('depression',result_7_8)
+    if result_5_6 > result_7_8:
+        return 2
+    else:
+        return 1
+
 
 def extractSymptomsForUserAnswers(sentences,idDisorder):
     symptoms = []
