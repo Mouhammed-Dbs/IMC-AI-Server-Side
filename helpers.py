@@ -168,8 +168,6 @@ def predictDisorderForUserAnswers(sentences):
     for sent_dict in sentences:
         sent = sent_dict['content']
         idQue = sent_dict['idQue']
-        # print(processSent(sent.split(), stopwords))
-        # print(sentToVec(wv, [processSent(sent.split(), stopwords)]))
         padded_sent_disorder = pad_sequences(sentToVec(wv, [processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
         padded_sent_symptom = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
         predictions = disorder_model.predict(padded_sent_disorder)
