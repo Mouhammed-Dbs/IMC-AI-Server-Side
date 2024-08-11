@@ -164,10 +164,11 @@ def predictDisorderForUserAnswers(sentences):
     meanPredictions = np.zeros((1, 3))
     max_5_6 = 0
     max_7_8 = 0
-
+    lastIdQue = 1
     for sent_dict in sentences:
         sent = sent_dict['content']
         idQue = sent_dict['idQue']
+        lastIdQue = idQue
         padded_sent_disorder = pad_sequences(sentToVec(wv, [processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
         padded_sent_symptom = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
         predictions = disorder_model.predict(padded_sent_disorder)
@@ -194,6 +195,8 @@ def predictDisorderForUserAnswers(sentences):
     else:
         if result_7_8>=0.4:
             return 1
+    if lastIdQue == 10:
+        return 0
     return -1
 
 
