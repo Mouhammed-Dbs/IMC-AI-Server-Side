@@ -162,13 +162,14 @@ def isGenerateSeq2Seq(sent):
 
 def predictDisorderForUserAnswers(sentences):
     meanPredictions = np.zeros((1, 3))
-    sum_5_6 = 0
-    sum_7_8 = 0
+    max_5_6 = 0
+    max_7_8 = 0
 
     for sent_dict in sentences:
         sent = sent_dict['content']
         idQue = sent_dict['idQue']
-
+        # print(processSent(sent.split(), stopwords))
+        # print(sentToVec(wv, [processSent(sent.split(), stopwords)]))
         padded_sent_disorder = pad_sequences(sentToVec(wv, [processSent(sent.split(), stopwords)]), maxlen=15, padding='post', dtype='float32')
         padded_sent_symptom = pad_sequences(sentToVec(wv,[processSent(sent.split(), stopwords)]), maxlen=13, padding='post', dtype='float32')
         predictions = disorder_model.predict(padded_sent_disorder)
@@ -177,19 +178,25 @@ def predictDisorderForUserAnswers(sentences):
         if 5 <= idQue < 9:
             symptom_predictions = symptoms_model.predict(padded_sent_symptom)
             if idQue in [5, 6]:
-                sum_5_6 += symptom_predictions[0, 31]
+                max_5_6 = max(max_5_6, symptom_predictions[0, 31])
             elif idQue in [7, 8]:
-                sum_7_8 += symptom_predictions[0, 19]
+                max_7_8 = max(max_7_8, symptom_predictions[0, 19])
+
     meanPredictions = meanPredictions / len(sentences)
 
-    result_5_6 = sum_5_6 * meanPredictions[0, 1]
-    result_7_8 = sum_7_8 * meanPredictions[0, 2]
-    print('anxiety:',result_5_6)
-    print('depression',result_7_8)
+    result_5_6 = max_5_6 * meanPredictions[0, 1]
+    result_7_8 = max_7_8 * meanPredictions[0, 2]
+
+    print('anxiety:', result_5_6)
+    print('depression', result_7_8)
+
     if result_5_6 > result_7_8:
-        return 2
+        if result_5_6>=0.4:
+            return 2
     else:
-        return 1
+        if result_7_8>=0.4:
+            return 1
+    return -1
 
 
 def extractSymptomsForUserAnswers(sentences,idDisorder):
@@ -210,5 +217,5 @@ def extractSymptomsForUserAnswers(sentences,idDisorder):
             else:
                 for i,d in enumerate(symptoms):
                     if d['label'] == label:
-                        symptoms[i]['prob'] = max(symptoms[i]['label'],float(predictions[0][label]))
+                        symptoms[i]['prob'] = max(symptoms[i]['prob'],float(predictions[0][label]))
     return symptoms
